@@ -2,6 +2,8 @@
 Xtpl is a tiny powerful HTML/Ajax rendering class for PHP >= 5.6 using shortcode system, Similar to Symfony renderView, but comes with new features.
 Xtpl is a Bundle of FloatPHP Framework, works in FloatPHP projects, and also available for non-framework projects, and as a Symfony Bundle too.
 
+[![Maintainability](https://api.codeclimate.com/v1/badges/509b40a38b1c0798eeef/maintainability)](https://codeclimate.com/github/Jakiboy/Xtpl/maintainability)
+
 # Which projects ?
 
 Like Load more system, when fetching data from SQL request to HTML target, using jQuery append function.
