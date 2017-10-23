@@ -90,9 +90,8 @@ echo Xtpl::build('template.tpl')->transformAll($multiple)->response;
 **transform method on multi-dimensional array using loop** :
 
 ```PHP
-	foreach($multiple as $single)
-  {
-		$x->transform($single);
+	foreach($multiple as $single) {
+	 $x->transform($single);
 	}
 	echo $x->response;
 ```
