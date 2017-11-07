@@ -2,8 +2,11 @@
 
 /**
  * @author   : JIHAD SINNAOUR
+ *
  * @version  : 0.1
+ *
  * @category : PHP frameework | FloatPHP
+ *
  * @link     : https://www.floatphp.com/
  */
 
@@ -171,7 +174,7 @@ class Xtpl
      *
      * @param string $shortcode
      *
-     * @return boolean
+     * @return bool
      */
     public function shortcodeIn($shortcode)
     {
@@ -226,7 +229,7 @@ class Xtpl
      *
      * @param array $replace, string $target
      *
-     * @return boolean
+     * @return bool
      */
     private function replace($replace, $target = null)
     {
