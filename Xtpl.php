@@ -2,269 +2,276 @@
 
 /**
  * @author   : JIHAD SINNAOUR
- *
- * @version  : 0.1
- *
+ * @package  : Html component
+ * @version  : 1.0
  * @category : PHP frameework | FloatPHP
- *
  * @link     : https://www.floatphp.com/
  */
 
-// namespace floatphp\System\Class\Html;
+namespace Jakiboy\Xtpl;
 
-include 'File.php';
-// use \floatphp\System\Class\Storage\File;
+use Jakiboy\Xtpl\File;
 
 class Xtpl
 {
-    public $shortcode = [];
-    public $response;
+	/**
+	 * @access public
+	 */
+	public $shortcode = [];
+	public $response;
 
-    protected $file;
-    protected $delimiter = '{%s%}';
+	/**
+	 * @access protected
+	 */
+	protected $file;
+	protected $delimiter = "{%s%}";
 
-    /**
-     * Xtpl object.
-     *
-     * @param string $path
-     *
-     * @return void
-     */
-    public function __construct($path = null)
-    {
-        // bind template file
-        try {
-            $this->file = new File($path);
-        } catch (Exception $e) {
-            die($e->getMessage());
-        }
-        // read file content
-        $this->file->read();
-    }
+	/**
+	 * Xtpl object
+	 *
+	 * @param string $path
+	 * @return void
+	 */
+	public function __construct($path = null)
+	{
+		// bind template file
+		try {
 
-    /**
-     * static Xtpl object.
-     *
-     * @param string $path
-     *
-     * @return void
-     */
-    public static function build($path = null)
-    {
-        return new self($path);
-    }
+			$this->file = new File($path);
+			
+		} catch (Exception $e) {
 
-    /**
-     * set custom delimiter.
-     *
-     * @param string $start starting delimiter,$end ending delimiter
-     *
-     * @return string
-     */
-    public function setDelimiter($start, $end)
-    {
-        return $this->delimiter = $start.'%s%'.$end;
-    }
+			die($e->getMessage());
+		}
+		// read file content
+		$this->file->read();
+	}
 
-    /**
-     * transform shortcode to content.
-     *
-     * @param array $dataArray
-     *
-     * @return object Xtpl
-     *
-     * @see multidimensional array
-     *
-     * using transform method on multi-dimensional array,
-     * or on non-multi-dimensional array by loop
-     */
-    public function transform(array $dataArray)
-    {
-        try {
-            $this->isSingle($dataArray);
-        } catch (Exception $e) {
-            die($e->getMessage());
-        }
-        // initialization
-        $result = [];
+	/**
+	 * static Xtpl object
+	 *
+	 * @param string $path
+	 * @return object
+	 */
+	public static function build($path = null)
+	{
+		return new self( $path );
+	}
 
-        foreach ($dataArray as $entity => $data) {
-            $shortcode = $this->doShortcode($entity);
-            $this->catchShortcode($shortcode);
-            // bind data into shortcode
-            $result[$shortcode] = $data;
-        }
-        if ($this->response) {
+	/**
+	 * set custom delimiter
+	 *
+	 * @param string $start starting delimiter,$end ending delimiter
+	 * @return string
+	 */
+	public function setDelimiter($start, $end)
+	{
+		return $this->delimiter = $start . '%s%' . $end;
+	}
 
-            // assembly result for multiple use
-            $this->response = $this->replace($result, $this->response);
-        } else {
+	/**
+	 * transform shortcode to content
+	 *
+	 * @param array $dataArray
+	 * @return object Xtpl
+	 * @see multidimensional array
+	 *
+	 * using transform method on multi-dimensional array,
+	 * or on two dimensional (2D) array by loop	 
+	 */
+	public function transform(array $dataArray)
+	{
+		try 
+		{
+			$this->isSingle($dataArray);	
+		}
+		catch (Exception $e) 
+		{
+			die($e->getMessage());
+		}
+		// initialization
+		$result = [];
 
-            // assembly result for one use
-            $this->response .= $this->replace($result);
-        }
+		foreach ($dataArray as $entity => $data)
+		{
+			$shortcode = $this->doShortcode($entity);
+			$this->catchShortcode($shortcode);
+			// bind data into shortcode
+			$result[$shortcode] = $data;
+		}
+		if ( $this->response ){
 
-        return $this;
-    }
+			// assembly result for multiple use
+			$this->response = $this->replace($result, $this->response);
 
-    /**
-     * transform shortcode to content for array like SQL response.
-     *
-     * @param array $dataArray
-     *
-     * @return object Xtpl
-     *
-     * using transform method on multi-dimensional array only
-     */
-    public function transformAll(array $dataArray)
-    {
-        try {
-            $this->isMultiple($dataArray);
-        } catch (Exception $e) {
-            die($e->getMessage());
-        }
-        // initialization
-        $this->response = null;
+		}else{
 
-        foreach ($dataArray as $data) {
-            $shortcodeArray = array_keys($data);
-            // initialization
-            $result = [];
+			// assembly result for single use
+			$this->response .= $this->replace($result);
+		}
+		return $this;
+	}
 
-            foreach ($shortcodeArray as $entity) {
-                $shortcode = $this->doShortcode($entity);
-                $this->catchShortcode($shortcode);
-                // bind data into shortcode
-                $result[$shortcode] = $data[$entity];
-            }
-            // assembly result for one use
-            $this->response .= $this->replace($result);
-        }
+	/**
+	 * transform shortcode to content for 2D array
+	 *
+	 * @param array $dataArray
+	 * @return object Xtpl
+	 *
+	 * using transform method on two dimensional array only	 
+	 */
+	public function transformAll(array $dataArray)
+	{
+		try 
+		{
+			$this->isMultiple($dataArray);	
+		}
+		catch (Exception $e) 
+		{
+			die($e->getMessage());
+		}
+		// initialization
+		$this->response = null;
 
-        return $this;
-    }
+		foreach ($dataArray as $data)
+		{
+			$shortcodeArray = array_keys($data);
+			// initialization
+			$result = [];
 
-    /**
-     * catch and return accepted shortcodes to class.
-     *
-     * @param string $s shortcode
-     *
-     * @return void
-     */
-    private function catchShortcode($s)
-    {
-        $this->shortcode[] = $s;
-        $this->shortcode = array_unique($this->shortcode);
-    }
+			foreach ($shortcodeArray as $entity)
+			{
+				$shortcode = $this->doShortcode($entity);
+				$this->catchShortcode($shortcode);
+				// bind data into shortcode
+				$result[$shortcode] = $data[$entity];
+			}
+			// assembly result for single use
+			$this->response .= $this->replace($result);
+		}
+		return $this;
+	}
 
-    /**
-     * return shortcode from data.
-     *
-     * @param string $e
-     *
-     * @return string
-     */
-    private function doShortcode($e)
-    {
-        return str_replace('%s%', $e, $this->delimiter);
-    }
+	/**
+	 * catch and return accepted shortcodes to class
+	 *
+	 * @param string $s shortcode
+	 * @return void
+	 */
+	private function catchShortcode($s)
+	{
+		$this->shortcode[] = $s;
+		$this->shortcode = array_unique($this->shortcode);
+	}
 
-    /**
-     * check shortcode existence.
-     *
-     * @param string $shortcode
-     *
-     * @return bool
-     */
-    public function shortcodeIn($shortcode)
-    {
-        $start = substr($this->delimiter, 0, 1);
-        $end = substr($this->delimiter, -1, 1);
+	/**
+	 * return shortcode from data
+	 *
+	 * @param string $e 
+	 * @return string
+	 */
+	private function doShortcode($e)
+	{
+		return str_replace("%s%", $e, $this->delimiter);
+	}
 
-        // catch all shortcodes with current delimiter
-        if ($start == '[') {
-            $start = '\\'.$start;
-        }
-        $pattern = '/'.$start.'(.*?)'.$end.'/';
+	/**
+	 * check shortcode existence
+	 *
+	 * @param string $shortcode 
+	 * @return boolean
+	 */
+	public function shortcodeIn($shortcode)
+	{
+		$start = substr($this->delimiter, 0, 1);
+		$end = substr($this->delimiter, -1, 1);
 
-        preg_match_all($pattern, $this->file->content, $match);
-        $list = array_shift($match);
+		// catch all shortcodes with current delimiter
+		if ($start == '[')
+		{
+			$start = '\\' . $start;
+		}
+		$pattern = '/' . $start . '(.*?)' . $end . '/';
 
-        // search target shortcode
-        if (in_array($shortcode, $list)) {
-            return true;
-        }
-    }
+		preg_match_all($pattern, $this->file->content, $match);
+		$list = array_shift($match);
 
-    /**
-     * clear unreplaced shortcodes.
-     *
-     * @param void
-     *
-     * @return void
-     */
-    public function clear()
-    {
-        $start = substr($this->delimiter, 0, 1);
-        $end = substr($this->delimiter, -1, 1);
+		// search target shortcode
+		if (in_array($shortcode, $list))
+		{
+			return true;
+		}
+	}
 
-        // catch all shortcodes with current delimiter
-        if ($start == '[') {
-            $start = '\\'.$start;
-        }
-        $pattern = '/'.$start.'(.*?)'.$end.'/';
+	/**
+	 * clear unreplaced shortcodes
+	 *
+	 * @param void
+	 * @return void
+	 */
+	public function clear()
+	{
+		$start = substr($this->delimiter, 0, 1);
+		$end = substr($this->delimiter, -1, 1);
 
-        preg_match_all($pattern, $this->response, $match);
-        $list = array_shift($match);
+		// catch all shortcodes with current delimiter
+		if ($start == '[') 
+		{
+			$start = '\\' . $start;
+		}
+		$pattern = '/' . $start . '(.*?)' . $end . '/';
 
-        foreach ($list as $shortcode) {
-            $this->response = str_replace($shortcode, '', $this->response);
-        }
+		preg_match_all($pattern, $this->response, $match);
+		$list = array_shift($match);
 
-        return $this;
-    }
+		foreach ($list as $shortcode) {
+			$this->response = str_replace($shortcode, '', $this->response);
+		}
+		return $this;
+	}
 
-    /**
-     * replace keys of array.
-     *
-     * @param array $replace, string $target
-     *
-     * @return bool
-     */
-    private function replace($replace, $target = null)
-    {
-        if (is_null($target)) {
-            return str_replace(array_keys($replace), $replace, $this->file->content);
-        } else {
-            return str_replace(array_keys($replace), $replace, $target);
-        }
-    }
+	/**
+	 * replace keys of array
+	 *
+	 * @param array $replace, string $target 
+	 * @return boolean
+	 */
+	private function replace($replace, $target = null)
+	{
+		if (is_null($target)) {
+			return str_replace(array_keys($replace), $replace, $this->file->content);
+		}else{
+			return str_replace(array_keys($replace), $replace, $target);
+		}
+	}
 
-    /**
-     * @todo Exception
-     */
-    private function isMultiple(array $array)
-    {
-        foreach ($array as $sub) {
-            if (is_array($sub)) {
-                return true;
-            } else {
-                throw new Exception('Cannot use transformAll on single array, use transform instead', 0);
-            }
-        }
-    }
-
-    /**
-     * @todo Exception
-     */
-    private function isSingle(array $array)
-    {
-        foreach ($array as $sub) {
-            if (!is_array($sub)) {
-                return true;
-            } else {
-                throw new Exception('Cannot use transform on multiple array, use transformAll instead', 0);
-            }
-        }
-    }
+	/**
+	 * @todo Exception
+	 */
+	private function isMultiple(array $array)
+	{
+		foreach ($array as $sub)
+		{
+		    if (is_array($sub)){
+		      return true;
+		    }else{
+		    	throw new Exception("Cannot use transformAll on single array, use transform instead", 0);
+		    }
+		}
+	}
+	
+	/**
+	 * @todo Exception
+	 */
+	private function isSingle(array $array)
+	{
+		foreach ($array as $sub)
+		{
+		    if (!is_array($sub)){
+		      return true;
+		    }else{
+		    	throw new Exception("Cannot use transform on multiple array, use transformAll instead", 0);
+		    }
+		}
+	}
 }
