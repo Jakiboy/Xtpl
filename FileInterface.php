@@ -8,7 +8,7 @@
  * @link     : https://www.floatphp.com/
  */
  
-// namespace floatphp\System\Interface\Storage;
+namespace Jakiboy\Xtpl;
 
 interface FileInterface
 {
