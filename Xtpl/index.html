@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="description" content="Template render class for PHP/Ajax">
+		<meta name="author" content="JIHAD SINNAOUR">
+		<meta name="generate" content="floatPHP">
+		<title>Xtpl | Ajax Template Transformer (PHP/Ajax Render Class)</title>
+		<link href="./assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+		<link href="./assets/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+		<link href="./assets/vendor/highlight/styles/agate.css" rel="stylesheet" type="text/css">
+		<link href="./assets/css/style.css" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Signika+Negative" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Chivo:900" rel="stylesheet">
+		<link rel="icon" type="image/png" href="./assets/img/favicon.png">
+	</head>
+	<body>
+		<article>
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-8 col-md-10 mx-auto">
+						<img src="./assets/img/xtpl.png" class="img-fluid">
+						<h1 class="post-title">Xtpl (<small>Ajax Template Transformer</small>)</h1>
+						<span class="post-subtitle">PHP/Ajax Template Render Class</span>
+						<p>Xtpl, a basic powerful PHP/Ajax class for HTML rendering, built on PHP >= 5.6, using shortcode concept to replace template's placeholders with data and generate HTML response for Ajax, Similar to <a href="https://symfony.com/doc/2.0/book/controller.html#rendering-templates" target="_blank">Symfony renderView</a>, but comes with new features. Xtpl is a Bundle of <a href="https://www.floatphp.com/">FloatPHP Framework</a>, works mostly in FloatPHP projects (based on <a href="https://twig.symfony.com/" target="_blank">Twig template engine</a>), and also compatible with non-frameworked projects. Available as Symfony Bundle & Laravel Package.</p>
+						<a href="https://github.com/Jakiboy/Xtpl" class="btn github-btn"><span>View on Github</span></a>
+						<h2>Which projects ?</h2>
+						<p>The perfect example for Xtpl usecase, is <strong>Ajax Load More System</strong> :</p>
+						<img src="./assets/img/loadmore.png" class="img-fluid">
+						<p>by pressing load more button, after an Ajax call, Controller fetch data from database and generate HTML response that will be shown in client side using jQuery append function. So in place of (Hardcoding) building HTML result in Controller and return content, you can simply define shortcodes in target (HTML Template), then use Xtpl class to return rendered result content.</p>
+						<h2>Why use Xtpl ?</h2>
+						<p>By using it, editing templates will be simple, because HTML result is separated from logical, and controller is quickly maintainable. And in big term, Xtpl is dedicated for keeping clear MVC Pattern.</p>
+						<h2>How it works ?</h2>
+						<p>The basic concept is on shortcodes and keys of result SQL arrays, the class transform shortcodes names to value of data with the same names of array keys, for example; in template the shortcode <code>&lt;span&gt;{name}&lt;/span&gt;</code> is placed, and in SQL result 2D Array <strong>['name'=>'John']</strong> etc, then rendered result gonna be <code>&lt;span&gt;John&lt;/span&gt;</code>.</p>
+						<h2>How to install it?</h2>
+						<div class="code-wrapper">
+							<code class="json">
+								{<br>
+								    <span class="tab"></span>"require": {<br>
+								    <span class="tab"></span><span class="tab"></span>"Jakiboy/Xtpl": "0.1.0"<br>
+								    <span class="tab"></span>}<br>
+								}<br>
+							</code>
+						</div>
+						<span class="text-muted"><i class="fa fa-question-circle" aria-hidden="true"></i> Using composer</span>
+						<br>
+						<div class="code-wrapper">
+							<code class="dos">
+								$ composer install
+							</code>
+						</div>
+						<h2>How to use?</h2>
+						<p>Basic usage :</p>
+						<div class="code-wrapper">
+							<code class="php">
+							include('Xtpl.php'); // Our class<br>
+							$multiple; // SQL 2D Array : (SELECT * FROM example)<br>
+							$x = new Xtpl('path/to/template.xtpl'); // instance with template path<br>
+							echo $x->transformAll($multiple)->response; // response for Ajax call<br>
+							</code>
+						</div>
+						<span class="text-muted"><i class="fa fa-question-circle" aria-hidden="true"></i> Template extension can be : tpl, html, twig...</span>
+						<h2>What methods ?</h2>
+						<h3><code class="method">transformAll($array)</code></h3>
+						<p><code class="param">Array $array</code></p>
+						<p>Transform all shortcodes with entities (attributes), shortcodes replacements are defined automatically, shortcode Must be compatible with returned data, eg. if in data array an attribute is named phone, shortcode in template Must be {phone}, or you can customize shortcode with setDelimiter method. transformAll method works onlly on 2D array, as an SQL response.</p>
+						<div class="code-wrapper">
+							<code class="php">
+							echo $x->transformAll($multiple)->response;
+							</code>
+						</div>
+						<span class="text-muted"><i class="fa fa-question-circle" aria-hidden="true"></i> Using transformAll method on single array : return error</span>
+						<h3><code class="method">transform($array)</code></h3>
+						<p><code class="param">Array $array</code></p>
+						<p>Works only on 1D array as a single shifted array.</p>
+						<div class="code-wrapper">
+							<code class="php">
+							echo $x->transform($single)->response;
+							</code>
+						</div>
+						<span class="text-muted"><i class="fa fa-question-circle" aria-hidden="true"></i> Using transform method on 2D array : return error</span>
+						<h3><code class="method">setDelimiter(<small>$delimiterX,$delimiterY</small>)</code></h3>
+						<p><code class="param">String $delimiterX, $delimiterY</code></p>
+						<p>Customize shortcodes, or even use multiple shortcodes : {shortcode}, [shortcode], &lt;shortcode&gt; ...</p>
+						<div class="code-wrapper">
+							<code class="php">
+							$x->setDelimiter('[',']');
+							</code>
+						</div>
+						<span class="text-muted"><i class="fa fa-question-circle" aria-hidden="true"></i> setDelimiter method MUST be befor transformation</span>
+						<h3><code class="method">shortcodeIn(<small>$shortcode</small>)</code></h3>
+						<p><code class="param">Return boolean</code></p>
+						<p>Return boolean of shortcode existence on template</p>
+						<div class="code-wrapper">
+							<code class="php">
+							$x->shortcodeIn('{name}'); // return false|true
+							</code>
+						</div>
+						<span class="text-muted"><i class="fa fa-question-circle" aria-hidden="true"></i> Must use setDelimiter before to detect other shortcodes with different delimiters</span>
+						<h3><code class="method">clear()</code></h3>
+						<p>Clean result from undefined shortcode</p>
+						<div class="code-wrapper">
+							<code class="php">
+							echo $x->transformAll($multiple)->clear()->response;
+							</code>
+						</div>
+						<span class="text-muted"><i class="fa fa-question-circle" aria-hidden="true"></i> Clear Must be used before response</span>
+						<h2>Other Use case ?</h2>
+						<h3>Usage for static method :</h3>
+						<div class="code-wrapper">
+							<code class="php">
+							echo Xtpl::build('template.tpl')->transformAll($multiple)->response;
+							</code>
+						</div>	
+						<h3>Transform all with extra shortcode :</h3>
+						<div class="code-wrapper">
+							<code class="php">
+							$x->transformAll($multiple);<br>
+							$x->transform(['date'=>'22/10/2017']); // {date}<br>
+							echo $x->response;
+							</code>
+						</div>								
+						<h3>Transform method on 2D array using loop :</h3>
+						<div class="code-wrapper">
+							<code class="php">
+							foreach($multiple as $single) <br>{<br>
+							<span class="tab"></span>$x->transform($single);<br>
+							}<br>
+							echo $x->response;
+							</code>
+						</div>
+						<h3>Separated transform method on non 2D array :</h3>
+						<div class="code-wrapper">
+							<code class="php">
+							echo $x->transform(['id'  => '1']) // $id<br>
+							<span class="tab"></span>->transform(['name' => 'john']) // $name<br>
+							<span class="tab"></span>->transform(['mail' => 'john@mail.com']) // $email<br>
+							<span class="tab"></span>->transform(['phone'=> '012345678']) // $phone<br>
+							<span class="tab"></span>->response;
+							</code>
+						</div>
+						<h3>Both transform and transformAll on 2D & 1D array :</h3>
+						<div class="code-wrapper">
+							<code class="php">
+								echo $x->transformAll($multiple)->transform($single)->response;
+							</code>
+						</div>
+						<h2>FAQ</h2>					
+						<h3>Hwo to render view for Ajax request using Symfony (Twig) ?</h3>
+						<img src="./assets/img/symfony.png" alt="Symfony Ajax render view">
+						<p>I'ts quite simple,</p>
+						<div class="code-wrapper">
+							<code class="php">
+							echo $this->render(<br>
+							<span class="tab"></span>'TestBundle:Test:testTemplate.html.twig', // Ajax template<br>
+							<span class="tab"></span>$single // 1D array<br>
+							);
+							</code>
+						</div>
+						<h3>Hwo to render view for Ajax request using Laravel ?</h3>
+						<img src="./assets/img/laravel.png" alt="Laravel Ajax render view">
+						<p>I'ts also simple,</p>
+						<div class="code-wrapper">
+							<code class="php">
+							echo view(<br>
+							<span class="tab"></span>"testTemplate.ajax", // Ajax template<br>
+							<span class="tab"></span>compact('single','test') // 1D array passed<br>
+							)->render();
+							</code>
+						</div>
+						<h2>TODO</h2>
+						<ul>
+							<li>Make Xtpl works on Multi-dimensional Array</li>
+						</ul>
+						<div class="container">
+							<div class="row">
+								<p class="copyright">Coded by <img class="emoji" src="./assets/img/hand.png"> | <a href="https://info.jihadsinnaour.com/">JIHAD SINNAOUR</a> (Jakiboy) with <img class="emoji" src="./assets/img/heart.png"> </p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</article>
+		<footer>
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-8 col-md-10 mx-auto">
+						<ul class="list-inline text-center">
+							<li class="list-inline-item">
+								<a href="https://twitter.com/JSINNAOUR">
+									<span class="fa-stack fa-lg">
+										<i class="fa fa-circle fa-stack-2x"></i>
+										<i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+									</span>
+								</a>
+							</li>
+							<li class="list-inline-item">
+								<a href="https://www.facebook.com/jakiboy.10">
+									<span class="fa-stack fa-lg">
+										<i class="fa fa-circle fa-stack-2x"></i>
+										<i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+									</span>
+								</a>
+							</li>
+							<li class="list-inline-item">
+								<a href="https://github.com/Jakiboy/">
+									<span class="fa-stack fa-lg">
+										<i class="fa fa-circle fa-stack-2x"></i>
+										<i class="fa fa-github fa-stack-1x fa-inverse"></i>
+									</span>
+								</a>
+							</li>
+						</ul>
+						<p class="copyright text-muted">Copyright &copy; floatPHP Packages 2017</p>
+					</div>
+				</div>
+			</div>
+		</footer>
+		<script src="./assets/vendor/jquery/jquery.min.js"></script>
+		<script src="./assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+		<script src="./assets/vendor/highlight/highlight.pack.js"></script>
+		<script src="./assets/js/main.js"></script>
+		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-110997958-1"></script>
+		<script>
+		  window.dataLayer = window.dataLayer || [];
+		  function gtag(){dataLayer.push(arguments);}
+		  gtag('js', new Date());
+		  gtag('config', 'UA-110997958-1');
+		</script>
+	</body>
+</html>
