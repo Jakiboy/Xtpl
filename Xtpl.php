@@ -1,18 +1,18 @@
 <?php
 
 /**
- * @author   : JIHAD SINNAOUR
- * @package  : Html component
- * @version  : 1.0
- * @category : PHP frameework | FloatPHP
- * @link     : https://www.floatphp.com/
+ * @package Xtpl (Ajax Template Transformer)
+ * @category PHP/Ajax HTML Render Class
+ * @version 1.0.0
+ * @author JIHAD SINNAOUR
+ * @copyright (c) 2018 JIHAD SINNAOUR <j.sinnaour.official@gmail.com>
+ * @license MIT
+ * @link https://jakiboy.github.io/Xtpl/
  */
 
 namespace Jakiboy\Xtpl;
 
-use Jakiboy\Xtpl\File;
-
-class Xtpl
+class Xtpl implements XTPLInterface
 {
 	/**
 	 * @access public
@@ -35,22 +35,14 @@ class Xtpl
 	public function __construct($path = null)
 	{
 		// bind template file
-		try {
-
-			$this->file = new File($path);
-			
-		} catch (Exception $e) {
-
-			die($e->getMessage());
-		}
-		// read file content
+		$this->file = new File($path);
 		$this->file->read();
 	}
 
 	/**
 	 * static Xtpl object
 	 *
-	 * @param string $path
+	 * @param string|null $path
 	 * @return object
 	 */
 	public static function build($path = null)
@@ -77,18 +69,12 @@ class Xtpl
 	 * @see multidimensional array
 	 *
 	 * using transform method on multi-dimensional array,
-	 * or on two dimensional (2D) array by loop	 
+	 * or on two dimensional (2D) array by loop
 	 */
 	public function transform(array $dataArray)
 	{
-		try 
-		{
-			$this->isSingle($dataArray);	
-		}
-		catch (Exception $e) 
-		{
-			die($e->getMessage());
-		}
+		$this->isSingle($dataArray);
+
 		// initialization
 		$result = [];
 
@@ -99,13 +85,14 @@ class Xtpl
 			// bind data into shortcode
 			$result[$shortcode] = $data;
 		}
-		if ( $this->response ){
-
+		if ( $this->response )
+		{
 			// assembly result for multiple use
 			$this->response = $this->replace($result, $this->response);
 
-		}else{
-
+		}
+		else
+		{
 			// assembly result for single use
 			$this->response .= $this->replace($result);
 		}
@@ -122,14 +109,8 @@ class Xtpl
 	 */
 	public function transformAll(array $dataArray)
 	{
-		try 
-		{
-			$this->isMultiple($dataArray);	
-		}
-		catch (Exception $e) 
-		{
-			die($e->getMessage());
-		}
+		$this->isMultiple($dataArray);
+
 		// initialization
 		$this->response = null;
 
@@ -224,7 +205,8 @@ class Xtpl
 		preg_match_all($pattern, $this->response, $match);
 		$list = array_shift($match);
 
-		foreach ($list as $shortcode) {
+		foreach ($list as $shortcode)
+		{
 			$this->response = str_replace($shortcode, '', $this->response);
 		}
 		return $this;
@@ -238,40 +220,57 @@ class Xtpl
 	 */
 	private function replace($replace, $target = null)
 	{
-		if (is_null($target)) {
+		if (is_null($target))
+		{
 			return str_replace(array_keys($replace), $replace, $this->file->content);
-		}else{
+		}
+		else
+		{
 			return str_replace(array_keys($replace), $replace, $target);
 		}
 	}
 
 	/**
-	 * @todo Exception
+	 * check array level : multiple
+	 *
+	 * @param array $array
+	 * @return boolean
 	 */
 	private function isMultiple(array $array)
 	{
 		foreach ($array as $sub)
 		{
-		    if (is_array($sub)){
-		      return true;
-		    }else{
-		    	throw new Exception("Cannot use transformAll on single array, use transform instead", 0);
+			try
+			{
+		    	if (!is_array($sub)) throw new XTPLException('single');
+				else return true;
 		    }
+			catch (XTPLException $e)
+			{
+				die($e->message());
+			}
 		}
 	}
 	
 	/**
-	 * @todo Exception
+	 * check array level : single
+	 *
+	 * @param array $array
+	 * @return boolean
 	 */
 	private function isSingle(array $array)
 	{
 		foreach ($array as $sub)
 		{
-		    if (!is_array($sub)){
-		      return true;
-		    }else{
-		    	throw new Exception("Cannot use transform on multiple array, use transformAll instead", 0);
+			try
+			{
+		    	if (is_array($sub)) throw new XTPLException('multiple');
+		    	else return true;
 		    }
+			catch (XTPLException $e)
+			{
+				die($e->message());
+			}
 		}
 	}
 }

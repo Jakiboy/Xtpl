@@ -1,20 +1,17 @@
 <?php
 
 /**
- * @author   : JIHAD SINNAOUR
- * @package  : File system
- * @version  : 1.0
- * @category : PHP frameework | FloatPHP
- * @link     : https://www.floatphp.com/
+ * @package Xtpl (Ajax Template Transformer)
+ * @category PHP/Ajax HTML Render Class
+ * @version 1.0.0
+ * @author JIHAD SINNAOUR
+ * @copyright (c) 2018 JIHAD SINNAOUR <j.sinnaour.official@gmail.com>
+ * @license MIT
+ * @link https://jakiboy.github.io/Xtpl/
  */
 
 namespace Jakiboy\Xtpl;
 
-use Jakiboy\Xtpl\FileInterface;
-
-/**
-* @ OK
-*/
 class File implements FileInterface
 {
 	/**
@@ -26,14 +23,17 @@ class File implements FileInterface
 	public $ext;
 	public $parent;
 	public $content;
+
 	/**
 	 * @access private
 	 */
 	private $handler;
+
 	/**
 	 * @access protected
 	 */
 	protected $mode;
+
 	/**
 	 * File object
 	 *
@@ -46,6 +46,7 @@ class File implements FileInterface
 		$this->isReady();
 		$this->open();
 	}
+
 	/**
 	 * define properties
 	 *
@@ -61,25 +62,27 @@ class File implements FileInterface
 		$this->ext    = pathinfo($this->path, PATHINFO_EXTENSION);
 		$this->name   = str_replace('.'.$this->ext,'',$this->path);
 	}
+
 	/**
 	 * check file
 	 *
 	 * @param void
-	 * @return void
+	 * @return boolean
 	 */
 	public function isReady()
 	{
-		if (!$this->exists()) {
-
-			throw new Exception('File '. $this->path .' doesn\'t exist');
-
-		}elseif (!$this->readable()) {
-
-			throw new Exception('Error reading the file : ' . $this->path);
-		}else{
-			return TRUE;
+		try
+		{
+			if (!$this->exists()) throw new FileException('notfound');
+			elseif (!$this->readable()) throw new FileException('unreadable');
+			else return true;
+		}
+		catch (FileException $e)
+		{
+			die($e->message());
 		}
 	}
+
 	/**
 	 * create file
 	 *
@@ -90,6 +93,7 @@ class File implements FileInterface
 	{
 		$this->handler = fopen($this->path, 'w');
 	}
+
 	/**
 	 * open file
 	 *
@@ -103,16 +107,18 @@ class File implements FileInterface
 			$this->handler = fopen($this->path, $this->mode);
 		}
 	}
+
 	/**
 	 * write file
 	 *
-	 * @param void
+	 * @param string $input
 	 * @return void
 	 */
 	public function write($input)
 	{
 		fwrite(fopen($this->path, 'w'), $input);
 	}
+
 	/**
 	 * add string to file
 	 *
@@ -123,6 +129,7 @@ class File implements FileInterface
 	{
 		fwrite(fopen($this->path, 'a'), $input);
 	}
+
 	/**
 	 * add space to file
 	 *
@@ -133,6 +140,7 @@ class File implements FileInterface
 	{
 		fwrite(fopen($this->path, 'a'), PHP_EOL);
 	}
+
 	/**
 	 * read file
 	 *
@@ -146,6 +154,7 @@ class File implements FileInterface
 			$this->content = fread($this->handler,filesize($this->path));
 		}
 	}
+
 	/**
 	 * close file handler
 	 *
@@ -156,55 +165,55 @@ class File implements FileInterface
 	{
 		fclose($this->handler);
 	}
+
 	/**
 	 * delete file object
 	 *
 	 * @param void
-	 * @return void
+	 * @return boolean
 	 */
 	public function delete()
 	{
 		$this->close();
 		unlink($this->path);
+		if ( !$this->exists() ) return true;
 	}
+
 	/**
 	 * check file exists
 	 *
 	 * @param void
-	 * @return void
+	 * @return boolean
 	 */
 	protected function exists()
 	{
 		if (is_file($this->path) && file_exists($this->path))
-		{
-			return TRUE;
-		}
+		return true;
 	}
+
 	/**
 	 * check file readable
 	 *
 	 * @param void
-	 * @return void
+	 * @return boolean
 	 */
 	protected function readable()
 	{
-		if (!fopen($this->path, 'r') === FALSE) {
-			return TRUE;
-		}
+		if (!fopen($this->path, 'r') === false)
+		return true;
 	}
+
 	/**
 	 * check file empty
 	 *
 	 * @param void
-	 * @return void
+	 * @return boolean
 	 */
 	public function isEmpty()
 	{
 		if ($this->exists($this->path))
 		{
-			if (filesize($this->path) == 0) {
-				return TRUE;
-			}
+			if (filesize($this->path) == 0) return true;
 		}
 	}
 
