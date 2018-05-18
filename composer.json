@@ -1,0 +1,12 @@
+{
+    "name": "jakiboy/xtpl",
+    "description": "PHP/Ajax Template Render Class",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "JIHAD SINNAOUR",
+            "email": "j.sinnaour.official@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable"
+}
